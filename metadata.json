@@ -1,0 +1,7 @@
+{
+  "name": "Sistem Informasi DPT Pilkades",
+  "description": "Aplikasi pendataan, verifikasi, rekapitulasi, dan pelaporan Daftar Pemilih Tetap (DPT) Pemilihan Kepala Desa.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

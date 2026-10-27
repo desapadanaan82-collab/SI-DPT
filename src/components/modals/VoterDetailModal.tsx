@@ -157,6 +157,13 @@ export const VoterDetailModal: React.FC<VoterDetailModalProps> = ({
           </div>
 
           <div className="p-3 rounded-xl border border-slate-100 bg-slate-50/60">
+            <span className="text-slate-400 text-[11px] block mb-0.5">Penetapan TPS</span>
+            <span className="font-bold text-emerald-800 text-xs">
+              {voter.tpsNomor ? `TPS ${voter.tpsNomor}` : 'Belum Ditetapkan'}
+            </span>
+          </div>
+
+          <div className="p-3 rounded-xl border border-slate-100 bg-slate-50/60">
             <span className="text-slate-400 text-[11px] block mb-0.5">Hari H Pilkades</span>
             <span className="font-semibold text-emerald-800">
               {settings?.tanggalPelaksanaan ? formatDateToLong(settings.tanggalPelaksanaan) : 'Belum Ditentukan'}

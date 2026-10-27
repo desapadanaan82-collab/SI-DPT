@@ -47,7 +47,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'dashboard', label: 'Dashboard Statistik', icon: LayoutDashboard },
         { id: 'voters', label: 'Data DPT Warga', icon: Users },
         { id: 'verification', label: 'Verifikasi Data', icon: UserCheck },
-        { id: 'territories', label: 'Data Wilayah RT/RW', icon: MapPin },
+        { id: 'tps', label: 'Data & Peta TPS', icon: MapPin },
+        { id: 'tps_recap', label: 'Rekapitulasi Gender', icon: BarChart3 },
+        { id: 'territories', label: 'Data Wilayah RT/RW', icon: Building },
       ],
     },
     {
@@ -55,6 +57,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       items: [
         { id: 'import', label: 'Impor Excel / CSV', icon: FileSpreadsheet },
         { id: 'reports', label: 'Laporan & Ekspor', icon: FileText },
+      ],
+    },
+    {
+      title: 'Portal Warga',
+      items: [
+        { id: 'public_preview', label: 'Lihat Portal Publik', icon: Vote },
       ],
     },
     ...(isAdmin

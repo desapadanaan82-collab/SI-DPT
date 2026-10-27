@@ -1,13 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { StorageService } from './services/storage';
-import { Dusun, RT, RW, ToastMessage, Voter } from './types';
+import { Dusun, RT, RW, ToastMessage, TPS, Voter } from './types';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './components/Dashboard';
 import { VotersList } from './components/VotersList';
 import { Verification } from './components/Verification';
 import { Territories } from './components/Territories';
+import { TpsManagement } from './components/TpsManagement';
+import { TpsRecap } from './components/TpsRecap';
+import { PublicPortal } from './components/PublicPortal';
 import { ImportData } from './components/ImportData';
 import { Reports } from './components/Reports';
 import { UsersManagement } from './components/UsersManagement';
@@ -32,10 +35,12 @@ function MainApp() {
   const [dusuns, setDusuns] = useState<Dusun[]>(() => StorageService.getDusuns());
   const [rws, setRws] = useState<RW[]>(() => StorageService.getRWs());
   const [rts, setRts] = useState<RT[]>(() => StorageService.getRTs());
+  const [tpsList, setTpsList] = useState<TPS[]>(() => StorageService.getTPS());
   const [settings, setSettings] = useState(() => StorageService.getSettings());
 
   // Routing and UI states
-  const [currentPage, setCurrentPage] = useState('territories'); // Start on territories or dashboard
+  const [currentPage, setCurrentPage] = useState('dashboard');
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
@@ -61,6 +66,7 @@ function MainApp() {
     setDusuns(StorageService.getDusuns());
     setRws(StorageService.getRWs());
     setRts(StorageService.getRTs());
+    setTpsList(StorageService.getTPS());
     setSettings(StorageService.getSettings());
   }, []);
 
@@ -121,8 +127,52 @@ function MainApp() {
     }
   };
 
+  // Public visitor portal view if not logged in
   if (!currentUser) {
-    return <LoginScreen settings={settings} />;
+    if (showLoginModal) {
+      return (
+        <LoginScreen
+          settings={settings}
+          onCancel={() => setShowLoginModal(false)}
+        />
+      );
+    }
+    return (
+      <PublicPortal
+        settings={settings}
+        tpsList={tpsList}
+        voters={voters}
+        dusuns={dusuns}
+        onOpenLogin={() => setShowLoginModal(true)}
+      />
+    );
+  }
+
+  // Public preview mode for staff
+  if (currentPage === 'public_preview') {
+    return (
+      <div className="relative">
+        <div className="bg-amber-600 text-white px-4 py-2 text-xs font-bold flex items-center justify-between sticky top-0 z-50 shadow-md">
+          <div className="flex items-center gap-2">
+            <span>👁️ Mode Pratinjau Portal Publik (Tampilan Warga Desa)</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setCurrentPage('dashboard')}
+            className="px-3 py-1 bg-white text-amber-900 rounded-lg text-xs font-bold hover:bg-amber-50 transition"
+          >
+            &larr; Kembali ke Panel Petugas
+          </button>
+        </div>
+        <PublicPortal
+          settings={settings}
+          tpsList={tpsList}
+          voters={voters}
+          dusuns={dusuns}
+          onOpenLogin={() => setCurrentPage('dashboard')}
+        />
+      </div>
+    );
   }
 
   return (
@@ -154,6 +204,7 @@ function MainApp() {
                 dusuns={dusuns}
                 rws={rws}
                 rts={rts}
+                tpsList={tpsList}
                 settings={settings}
                 onNavigate={setCurrentPage}
                 onAddVoter={handleOpenAddVoter}
@@ -167,6 +218,7 @@ function MainApp() {
                 dusuns={dusuns}
                 rws={rws}
                 rts={rts}
+                tpsList={tpsList}
                 settings={settings}
                 onAddVoter={handleOpenAddVoter}
                 onEditVoter={handleOpenEditVoter}
@@ -174,6 +226,31 @@ function MainApp() {
                 onVerifyVoter={handleOpenVerifyVoter}
                 onViewVoter={handleOpenViewVoter}
                 onNavigate={setCurrentPage}
+              />
+            )}
+
+            {currentPage === 'tps' && (
+              <TpsManagement
+                tpsList={tpsList}
+                voters={voters}
+                dusuns={dusuns}
+                rws={rws}
+                rts={rts}
+                onRefresh={refreshData}
+                onShowToast={showToast}
+                onNavigateToRecap={() => setCurrentPage('tps_recap')}
+              />
+            )}
+
+            {currentPage === 'tps_recap' && (
+              <TpsRecap
+                tpsList={tpsList}
+                voters={voters}
+                dusuns={dusuns}
+                rws={rws}
+                rts={rts}
+                settings={settings}
+                onSelectTps={(t) => setCurrentPage('tps')}
               />
             )}
 

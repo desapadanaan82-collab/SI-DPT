@@ -97,6 +97,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </button>
 
+          {/* Public Portal Shortcut */}
+          <button
+            onClick={() => onNavigate('public_preview')}
+            className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors"
+            title="Lihat Tampilan Portal Informasi Publik"
+          >
+            <Vote className="w-3.5 h-3.5 text-emerald-700" />
+            <span>Portal Publik</span>
+          </button>
+
           {/* PWA Install Button */}
           <PWAInstallButton variant="navbar" />
 

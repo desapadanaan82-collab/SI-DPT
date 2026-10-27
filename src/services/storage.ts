@@ -5,6 +5,8 @@ import {
   RT,
   RW,
   TerritoryRelationCheck,
+  TPS,
+  TpsRelationCheck,
   User,
   Voter,
 } from '../types';
@@ -14,11 +16,13 @@ import {
   validateNik,
   validateKk,
 } from '../utils/dateUtils';
+
 export const STORAGE_KEYS = {
   VOTERS: 'pilkades_dpt_voters',
   DUSUNS: 'pilkades_dpt_dusuns',
   RWS: 'pilkades_dpt_rws',
   RTS: 'pilkades_dpt_rts',
+  TPS: 'pilkades_dpt_tps',
   SETTINGS: 'pilkades_dpt_settings',
   USERS: 'pilkades_dpt_users',
   LOGS: 'pilkades_dpt_logs',
@@ -26,19 +30,107 @@ export const STORAGE_KEYS = {
   FIREBASE_CONFIG: 'pilkades_dpt_firebase_cfg',
 };
 
-// Initial default settings
+// Initial default settings for Desa Padanaan, Paseh, Sumedang
 export const DEFAULT_SETTINGS: DesaSettings = {
-  namaDesa: 'Desa Sukamaju',
-  kecamatan: 'Kecamatan Makmur',
-  kabupaten: 'Kabupaten Sejahtera',
-  provinsi: 'Jawa Tengah',
+  namaDesa: 'Desa Padanaan',
+  kecamatan: 'Kecamatan Paseh',
+  kabupaten: 'Kabupaten Sumedang',
+  provinsi: 'Jawa Barat',
   periodePilkades: '2026 - 2032',
   tanggalPelaksanaan: '2026-11-15', // Format: YYYY-MM-DD (15 November 2026)
   namaKetuaPanitia: 'Drs. H. Mulyadi, M.Si',
   namaSekretaris: 'Anisa Wulandari, S.Pd',
-  alamatKantor: 'Jl. Raya Balai Desa Sukamaju No. 01',
-  kontakSekretariat: 'panitia.pilkades@sukamaju.desa.id / 0812-3456-7890',
+  alamatKantor: 'Jl. Raya Desa Padanaan No. 01 Kec. Paseh Kab. Sumedang',
+  kontakSekretariat: 'panitia.pilkades@padanaan.desa.id / 0812-3456-7890',
 };
+
+// Initial default TPS (Tempat Pemungutan Suara)
+export const DEFAULT_TPS: TPS[] = [
+  {
+    id: 'tps-1',
+    nomor: '01',
+    nama: 'TPS 01 - Dusun Padanaan I',
+    namaTempat: 'SDN Padanaan I',
+    dusunId: 'dusun-1',
+    dusunNama: 'Dusun Krajan',
+    rw: '001',
+    rt: '001, 002',
+    alamat: 'Jl. Raya Desa Padanaan No. 15 RT 01 / RW 01',
+    latitude: -6.89241,
+    longitude: 107.98523,
+    kapasitas: 300,
+    aksesibilitas: 'Akses datar, ramah kursi roda dan lansia',
+    status: 'ditetapkan',
+    kontakPetugas: '0812-9876-1101',
+    namaKetuaKpks: 'Asep Saepudin',
+    keterangan: 'Ruang Kelas 1 & 2 SDN Padanaan I',
+    createdAt: '2026-01-15T08:00:00.000Z',
+    updatedAt: '2026-01-15T08:00:00.000Z',
+  },
+  {
+    id: 'tps-2',
+    nomor: '02',
+    nama: 'TPS 02 - Dusun Padanaan I',
+    namaTempat: 'Balai Pertemuan Dusun',
+    dusunId: 'dusun-1',
+    dusunNama: 'Dusun Krajan',
+    rw: '001',
+    rt: '003',
+    alamat: 'Gg. Cempaka RT 03 / RW 01',
+    latitude: -6.89312,
+    longitude: 107.98645,
+    kapasitas: 300,
+    aksesibilitas: 'Aula tertutup dengan ventilasi terbuka lebar',
+    status: 'ditetapkan',
+    kontakPetugas: '0813-8899-2202',
+    namaKetuaKpks: 'Dadan Ramdani',
+    keterangan: 'Dekat dengan posyandu mawar',
+    createdAt: '2026-01-15T08:00:00.000Z',
+    updatedAt: '2026-01-15T08:00:00.000Z',
+  },
+  {
+    id: 'tps-3',
+    nomor: '03',
+    nama: 'TPS 03 - Dusun Mekarsari',
+    namaTempat: 'Gedung Serbaguna Mekarsari',
+    dusunId: 'dusun-2',
+    dusunNama: 'Dusun Mekarsari',
+    rw: '002',
+    rt: '001, 002',
+    alamat: 'Jl. Mekarsari Raya RT 01 / RW 02',
+    latitude: -6.89550,
+    longitude: 107.98920,
+    kapasitas: 300,
+    aksesibilitas: 'Halaman parkir luas, dekat jalan lingkar desa',
+    status: 'ditetapkan',
+    kontakPetugas: '0812-7766-3303',
+    namaKetuaKpks: 'Maman Suratman',
+    keterangan: 'Gedung serbaguna masyarakat RW 02',
+    createdAt: '2026-01-15T08:00:00.000Z',
+    updatedAt: '2026-01-15T08:00:00.000Z',
+  },
+  {
+    id: 'tps-4',
+    nomor: '04',
+    nama: 'TPS 04 - Dusun Mekarsari',
+    namaTempat: 'Madrasah Diniyah Mekarsari',
+    dusunId: 'dusun-2',
+    dusunNama: 'Dusun Mekarsari',
+    rw: '002',
+    rt: '003',
+    alamat: 'Jl. Mawar RT 03 / RW 02',
+    latitude: -6.89710,
+    longitude: 107.99150,
+    kapasitas: 300,
+    aksesibilitas: 'Akses jalan beraspal, ramah penyandang disabilitas',
+    status: 'ditetapkan',
+    kontakPetugas: '0813-4455-4404',
+    namaKetuaKpks: 'Cecep Hidayat',
+    keterangan: 'Aula serbaguna madrasah diniyah',
+    createdAt: '2026-01-15T08:00:00.000Z',
+    updatedAt: '2026-01-15T08:00:00.000Z',
+  },
+];
 
 // Initial default dusuns
 export const DEFAULT_DUSUNS: Dusun[] = [
@@ -1296,6 +1388,344 @@ export const StorageService = {
     }
   },
 
+  // ==================== TPS (TEMPAT PEMUNGUTAN SUARA) OPERATIONS ====================
+  getTPS(): TPS[] {
+    const saved = readItem<TPS[]>(STORAGE_KEYS.TPS, []);
+    if (saved && saved.length > 0) {
+      return saved;
+    }
+    writeItem(STORAGE_KEYS.TPS, DEFAULT_TPS);
+    return DEFAULT_TPS;
+  },
+
+  getTPSById(id: string): TPS | undefined {
+    return this.getTPS().find((t) => t.id === id);
+  },
+
+  saveTPS(tpsList: TPS[]): void {
+    writeItem(STORAGE_KEYS.TPS, tpsList);
+  },
+
+  checkDuplicateCoordinates(
+    lat: number,
+    lng: number,
+    excludeTpsId?: string
+  ): { isDuplicate: boolean; isTooClose: boolean; matchedTps?: TPS; distanceMeters?: number; message?: string } {
+    const list = this.getTPS();
+    for (const tps of list) {
+      if (excludeTpsId && tps.id === excludeTpsId) continue;
+      if (typeof tps.latitude !== 'number' || typeof tps.longitude !== 'number') continue;
+
+      // Calculate haversine distance in meters
+      const lat1 = (lat * Math.PI) / 180;
+      const lat2 = (tps.latitude * Math.PI) / 180;
+      const dLat = ((tps.latitude - lat) * Math.PI) / 180;
+      const dLng = ((tps.longitude - lng) * Math.PI) / 180;
+
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = Math.round(6371000 * c);
+
+      if (distance < 15) {
+        return {
+          isDuplicate: true,
+          isTooClose: true,
+          matchedTps: tps,
+          distanceMeters: distance,
+          message: `Koordinat hampir persis sama (${distance} m) dengan ${tps.nama} (${tps.nomor}). Periksa kembali apakah ini lokasi yang sama.`,
+        };
+      }
+      if (distance < 60) {
+        return {
+          isDuplicate: false,
+          isTooClose: true,
+          matchedTps: tps,
+          distanceMeters: distance,
+          message: `Jarak sangat dekat (${distance} m) dengan ${tps.nama} (${tps.nomor}). Pastikan lokasi tidak tumpang tindih.`,
+        };
+      }
+    }
+    return { isDuplicate: false, isTooClose: false };
+  },
+
+  addTPS(
+    data: Omit<TPS, 'id' | 'createdAt' | 'updatedAt'>,
+    user: User
+  ): TPS {
+    if (!user || (user.role !== 'admin' && user.role !== 'operator')) {
+      throw new Error('Hanya Administrator atau Operator yang dapat menambah TPS.');
+    }
+
+    const cleanNomor = normalizeCode(data.nomor);
+    const cleanNama = normalizeName(data.nama);
+    const cleanTempat = normalizeName(data.namaTempat || cleanNama);
+
+    if (!cleanNomor) throw new Error('Nomor TPS wajib diisi.');
+    if (!cleanNama) throw new Error('Nama TPS wajib diisi.');
+
+    const allTPS = this.getTPS();
+    const duplicate = allTPS.find(
+      (t) => normalizeCode(t.nomor) === cleanNomor
+    );
+    if (duplicate) {
+      throw new Error(`Nomor TPS ${cleanNomor} sudah ada ("${duplicate.nama}"). Gunakan nomor TPS lain.`);
+    }
+
+    const now = new Date().toISOString();
+    const newTPS: TPS = {
+      ...data,
+      id: `tps-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      nomor: cleanNomor,
+      nama: cleanNama,
+      namaTempat: cleanTempat,
+      alamat: normalizeName(data.alamat || ''),
+      latitude: Number(data.latitude) || -6.8924,
+      longitude: Number(data.longitude) || 107.9852,
+      kapasitas: Number(data.kapasitas) || 300,
+      aksesibilitas: normalizeName(data.aksesibilitas || 'Ramah disabilitas dan lansia'),
+      status: data.status || 'ditetapkan',
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    const updatedList = [...allTPS, newTPS];
+    this.saveTPS(updatedList);
+
+    this.addAuditLog({
+      userId: user.id,
+      userName: user.nama,
+      userRole: user.role,
+      action: 'tambah_tps',
+      description: `Menambahkan TPS baru: ${newTPS.nomor} - "${newTPS.nama}" di ${newTPS.alamat} (${newTPS.latitude}, ${newTPS.longitude}).`,
+    });
+
+    return newTPS;
+  },
+
+  updateTPS(id: string, updates: Partial<TPS>, user: User): TPS {
+    if (!user || (user.role !== 'admin' && user.role !== 'operator')) {
+      throw new Error('Hanya Administrator atau Operator yang dapat memperbarui TPS.');
+    }
+
+    const allTPS = this.getTPS();
+    const index = allTPS.findIndex((t) => t.id === id);
+    if (index === -1) {
+      throw new Error('Data TPS tidak ditemukan.');
+    }
+
+    const existing = allTPS[index];
+    const newNomor = updates.nomor ? normalizeCode(updates.nomor) : existing.nomor;
+
+    // Duplicate number check if nomor changed
+    if (newNomor !== existing.nomor) {
+      const dup = allTPS.find((t) => t.id !== id && normalizeCode(t.nomor) === newNomor);
+      if (dup) {
+        throw new Error(`Nomor TPS ${newNomor} sudah digunakan oleh ${dup.nama}.`);
+      }
+    }
+
+    const updatedTPS: TPS = {
+      ...existing,
+      ...updates,
+      nomor: newNomor,
+      nama: updates.nama ? normalizeName(updates.nama) : existing.nama,
+      namaTempat: updates.namaTempat ? normalizeName(updates.namaTempat) : existing.namaTempat,
+      alamat: updates.alamat ? normalizeName(updates.alamat) : existing.alamat,
+      latitude: updates.latitude !== undefined ? Number(updates.latitude) : existing.latitude,
+      longitude: updates.longitude !== undefined ? Number(updates.longitude) : existing.longitude,
+      kapasitas: updates.kapasitas !== undefined ? Number(updates.kapasitas) : existing.kapasitas,
+      aksesibilitas: updates.aksesibilitas ? normalizeName(updates.aksesibilitas) : existing.aksesibilitas,
+      status: updates.status || existing.status,
+      updatedAt: new Date().toISOString(),
+    };
+
+    allTPS[index] = updatedTPS;
+    this.saveTPS(allTPS);
+
+    // If nomor TPS changed, update related voters display
+    if (newNomor !== existing.nomor) {
+      const rawVoters = readItem<Voter[]>(STORAGE_KEYS.VOTERS, DEFAULT_VOTERS);
+      let count = 0;
+      const updatedVoters = rawVoters.map((v) => {
+        if (v.tpsId === id) {
+          count++;
+          return { ...v, tpsNomor: newNomor };
+        }
+        return v;
+      });
+      if (count > 0) {
+        writeItem(STORAGE_KEYS.VOTERS, updatedVoters);
+      }
+    }
+
+    this.addAuditLog({
+      userId: user.id,
+      userName: user.nama,
+      userRole: user.role,
+      action: 'edit_tps',
+      description: `Memperbarui data TPS ${updatedTPS.nomor} ("${updatedTPS.nama}").`,
+    });
+
+    return updatedTPS;
+  },
+
+  canDeleteTPS(id: string): TpsRelationCheck {
+    const tps = this.getTPSById(id);
+    if (!tps) {
+      return { canDelete: false, voterCount: 0, reason: 'Data TPS tidak ditemukan.' };
+    }
+
+    const voters = this.getVoters().filter((v) => v.tpsId === id);
+    if (voters.length > 0) {
+      return {
+        canDelete: false,
+        voterCount: voters.length,
+        reason: `TPS ${tps.nomor} ("${tps.nama}") tidak dapat dihapus karena masih ada ${voters.length} pemilih yang terdaftar di TPS ini. Harap pindahkan alokasi pemilih terlebih dahulu demi menjaga integritas data.`,
+        sampleVoters: voters.slice(0, 5),
+      };
+    }
+
+    return {
+      canDelete: true,
+      voterCount: 0,
+      reason: `Aman untuk dihapus. Tidak ada pemilih yang terhubung ke TPS ${tps.nomor}.`,
+    };
+  },
+
+  deleteTPS(id: string, user: User): boolean {
+    if (!user || user.role !== 'admin') {
+      throw new Error('Hanya Administrator yang memiliki wewenang untuk menghapus TPS.');
+    }
+
+    const check = this.canDeleteTPS(id);
+    if (!check.canDelete) {
+      throw new Error(check.reason);
+    }
+
+    const allTPS = this.getTPS();
+    const tps = allTPS.find((t) => t.id === id);
+    if (!tps) throw new Error('Data TPS tidak ditemukan.');
+
+    const filtered = allTPS.filter((t) => t.id !== id);
+    this.saveTPS(filtered);
+
+    this.addAuditLog({
+      userId: user.id,
+      userName: user.nama,
+      userRole: user.role,
+      action: 'hapus_tps',
+      description: `Menghapus TPS ${tps.nomor} - "${tps.nama}". Relasi data pemilih aman (0 pemilih).`,
+    });
+
+    return true;
+  },
+
+  assignVoterToTPS(voterId: string, tpsId: string | undefined, user: User): boolean {
+    const rawVoters = readItem<Voter[]>(STORAGE_KEYS.VOTERS, DEFAULT_VOTERS);
+    const voter = rawVoters.find((v) => v.id === voterId);
+    if (!voter) throw new Error('Data pemilih tidak ditemukan.');
+
+    let tpsNomor: string | undefined = undefined;
+    let tpsNama = 'Belum Ditetapkan';
+
+    if (tpsId) {
+      const tps = this.getTPSById(tpsId);
+      if (!tps) throw new Error('TPS tujuan tidak ditemukan.');
+      tpsNomor = tps.nomor;
+      tpsNama = `TPS ${tps.nomor} - ${tps.nama}`;
+    }
+
+    const updatedVoters = rawVoters.map((v) => {
+      if (v.id === voterId) {
+        return {
+          ...v,
+          tpsId: tpsId || undefined,
+          tpsNomor,
+          updatedAt: new Date().toISOString(),
+          updatedBy: user.nama,
+        };
+      }
+      return v;
+    });
+
+    writeItem(STORAGE_KEYS.VOTERS, updatedVoters);
+
+    this.addAuditLog({
+      userId: user.id,
+      userName: user.nama,
+      userRole: user.role,
+      action: 'alokasi_tps',
+      description: `Menetapkan pemilih "${voter.namaLengkap}" ke ${tpsNama}.`,
+    });
+
+    return true;
+  },
+
+  batchAssignVotersToTPS(voterIds: string[], tpsId: string | undefined, user: User): number {
+    if (!voterIds.length) return 0;
+    const rawVoters = readItem<Voter[]>(STORAGE_KEYS.VOTERS, DEFAULT_VOTERS);
+
+    let tpsNomor: string | undefined = undefined;
+    let tpsNama = 'Belum Ditetapkan';
+    if (tpsId) {
+      const tps = this.getTPSById(tpsId);
+      if (tps) {
+        tpsNomor = tps.nomor;
+        tpsNama = `TPS ${tps.nomor} - ${tps.nama}`;
+      }
+    }
+
+    const idSet = new Set(voterIds);
+    let affectedCount = 0;
+    const now = new Date().toISOString();
+
+    const updated = rawVoters.map((v) => {
+      if (idSet.has(v.id)) {
+        affectedCount++;
+        return {
+          ...v,
+          tpsId: tpsId || undefined,
+          tpsNomor,
+          updatedAt: now,
+          updatedBy: user.nama,
+        };
+      }
+      return v;
+    });
+
+    writeItem(STORAGE_KEYS.VOTERS, updated);
+
+    this.addAuditLog({
+      userId: user.id,
+      userName: user.nama,
+      userRole: user.role,
+      action: 'alokasi_tps',
+      description: `Penetapan massal ${affectedCount} pemilih ke ${tpsNama}.`,
+    });
+
+    return affectedCount;
+  },
+
+  autoAssignByTerritory(rw: string, rt: string | undefined, tpsId: string, user: User): number {
+    const rawVoters = readItem<Voter[]>(STORAGE_KEYS.VOTERS, DEFAULT_VOTERS);
+    const normRW = normalizeCode(rw);
+    const normRT = rt ? normalizeCode(rt) : undefined;
+
+    const targetVoters = rawVoters.filter((v) => {
+      if (normalizeCode(v.rw) !== normRW) return false;
+      if (normRT && normalizeCode(v.rt) !== normRT) return false;
+      return true;
+    });
+
+    return this.batchAssignVotersToTPS(
+      targetVoters.map((v) => v.id),
+      tpsId,
+      user
+    );
+  },
+
   // ==================== VOTER OPERATIONS ====================
   getVoters(): Voter[] {
     const rawVoters = readItem<Voter[]>(STORAGE_KEYS.VOTERS, DEFAULT_VOTERS);
@@ -1704,14 +2134,15 @@ export const StorageService = {
   // ==================== BACKUP & RESTORE ====================
   exportFullBackup(): string {
     const backup = {
-      version: '1.2.0',
+      version: '1.3.0',
       exportedAt: new Date().toISOString(),
-      appName: 'Sistem Informasi DPT Pilkades',
+      appName: 'Sistem Informasi DPT Pilkades Desa Padanaan',
       data: {
         settings: this.getSettings(),
         dusuns: this.getDusuns(),
         rws: this.getRWs(),
         rts: this.getRTs(),
+        tps: this.getTPS(),
         users: this.getUsers(),
         voters: this.getVoters(),
         logs: this.getAuditLogs(),
@@ -1737,6 +2168,7 @@ export const StorageService = {
       if (Array.isArray(parsed.data.dusuns)) writeItem(STORAGE_KEYS.DUSUNS, parsed.data.dusuns);
       if (Array.isArray(parsed.data.rws)) writeItem(STORAGE_KEYS.RWS, parsed.data.rws);
       if (Array.isArray(parsed.data.rts)) writeItem(STORAGE_KEYS.RTS, parsed.data.rts);
+      if (Array.isArray(parsed.data.tps)) writeItem(STORAGE_KEYS.TPS, parsed.data.tps);
       if (Array.isArray(parsed.data.users)) writeItem(STORAGE_KEYS.USERS, parsed.data.users);
       if (Array.isArray(parsed.data.voters)) writeItem(STORAGE_KEYS.VOTERS, parsed.data.voters);
 
@@ -1745,7 +2177,7 @@ export const StorageService = {
         userName: user.nama,
         userRole: user.role,
         action: 'backup_restore',
-        description: `Melakukan pemulihan data (Restore Backup) berisi ${parsed.data.voters.length} warga.`,
+        description: `Melakukan pemulihan data (Restore Backup) berisi ${parsed.data.voters.length} warga dan ${Array.isArray(parsed.data.tps) ? parsed.data.tps.length : 0} TPS.`,
       });
 
       return {
@@ -1767,6 +2199,7 @@ export const StorageService = {
     writeItem(STORAGE_KEYS.DUSUNS, DEFAULT_DUSUNS);
     writeItem(STORAGE_KEYS.RWS, DEFAULT_RWS);
     writeItem(STORAGE_KEYS.RTS, DEFAULT_RTS);
+    writeItem(STORAGE_KEYS.TPS, DEFAULT_TPS);
     writeItem(STORAGE_KEYS.USERS, DEFAULT_USERS);
     writeItem(STORAGE_KEYS.VOTERS, DEFAULT_VOTERS);
     writeItem(STORAGE_KEYS.LOGS, DEFAULT_LOGS);
@@ -1776,7 +2209,7 @@ export const StorageService = {
       userName: user.nama,
       userRole: user.role,
       action: 'backup_restore',
-      description: 'Mereset seluruh data aplikasi ke contoh data bawaan.',
+      description: 'Mereset seluruh data aplikasi ke contoh data bawaan Desa Padanaan.',
     });
   },
 };

@@ -23,13 +23,15 @@ import {
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { EligibilityBadge, StatusBadge } from './StatusBadge';
-import { formatDateToDisplay, formatDateToLong } from '../utils/dateUtils';
+import { formatDateToDisplay, formatDateToLong, maskNik } from '../utils/dateUtils';
+import { TPS } from '../types';
 
 interface VotersListProps {
   voters: Voter[];
   dusuns?: Dusun[];
   rws: RW[];
   rts: RT[];
+  tpsList?: TPS[];
   settings?: DesaSettings;
   onAddVoter: () => void;
   onEditVoter: (voter: Voter) => void;
@@ -44,6 +46,7 @@ export const VotersList: React.FC<VotersListProps> = ({
   dusuns = [],
   rws,
   rts,
+  tpsList = [],
   settings,
   onAddVoter,
   onEditVoter,
@@ -56,9 +59,11 @@ export const VotersList: React.FC<VotersListProps> = ({
   const [selectedDusunId, setSelectedDusunId] = useState('');
   const [selectedRw, setSelectedRw] = useState('');
   const [selectedRt, setSelectedRt] = useState('');
+  const [selectedTps, setSelectedTps] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [selectedEligibility, setSelectedEligibility] = useState<string>('');
   const [selectedGender, setSelectedGender] = useState<string>('');
+  const [isMasked, setIsMasked] = useState(false);
   const [sortBy, setSortBy] = useState<'date-desc' | 'date-asc' | 'alpha-asc' | 'alpha-desc' | 'age-desc' | 'age-asc'>('date-desc');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -114,6 +119,14 @@ export const VotersList: React.FC<VotersListProps> = ({
 
     if (selectedGender) {
       result = result.filter((v) => v.jenisKelamin === selectedGender);
+    }
+
+    if (selectedTps) {
+      if (selectedTps === 'unassigned') {
+        result = result.filter((v) => !v.tpsId);
+      } else {
+        result = result.filter((v) => v.tpsId === selectedTps);
+      }
     }
 
     // Sort
@@ -211,6 +224,7 @@ export const VotersList: React.FC<VotersListProps> = ({
     setSelectedDusunId('');
     setSelectedRw('');
     setSelectedRt('');
+    setSelectedTps('');
     setSelectedStatus('');
     setSelectedEligibility('');
     setSelectedGender('');
@@ -218,7 +232,7 @@ export const VotersList: React.FC<VotersListProps> = ({
     setPage(1);
   };
 
-  const hasFilter = search || selectedDusunId || selectedRw || selectedRt || selectedStatus || selectedEligibility || selectedGender;
+  const hasFilter = search || selectedDusunId || selectedRw || selectedRt || selectedTps || selectedStatus || selectedEligibility || selectedGender;
 
   return (
     <div className="space-y-4">
@@ -230,11 +244,25 @@ export const VotersList: React.FC<VotersListProps> = ({
             <span>Daftar Calon Pemilih Tetap (DPT)</span>
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Kelola data kependudukan, NIK, kalkulasi usia pemilih pada hari H, dan validasi berkas hak pilih.
+            Kelola data kependudukan, NIK, penempatan TPS, kalkulasi usia pemilih hari H, dan validasi berkas hak pilih.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setIsMasked((prev) => !prev)}
+            className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border transition-colors shadow-2xs ${
+              isMasked
+                ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
+            }`}
+            title="Samarkan NIK warga untuk perlindungan data pribadi (UU PDP)"
+          >
+            <ShieldAlert className="w-3.5 h-3.5 text-emerald-700" />
+            <span>{isMasked ? 'Sensor NIK Aktif' : 'Sensor NIK (UU PDP)'}</span>
+          </button>
+
           <button
             onClick={handleExportExcel}
             className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl transition-colors shadow-2xs"
@@ -392,6 +420,26 @@ export const VotersList: React.FC<VotersListProps> = ({
             </select>
           </div>
 
+          {/* TPS Filter */}
+          <div>
+            <select
+              value={selectedTps}
+              onChange={(e) => {
+                setSelectedTps(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs bg-white text-slate-700 font-medium"
+            >
+              <option value="">Semua TPS ({tpsList.length})</option>
+              <option value="unassigned">⚠️ Belum Ada TPS</option>
+              {tpsList.map((tps) => (
+                <option key={tps.id} value={tps.id}>
+                  TPS {tps.nomor} ({tps.namaTempat || tps.nama})
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* Kelayakan Usia Filter */}
           <div>
             <select
@@ -457,6 +505,7 @@ export const VotersList: React.FC<VotersListProps> = ({
                 <th className="py-3 px-3.5">Kelahiran & Usia Hari H</th>
                 <th className="py-3 px-3.5 text-center">JK / Status</th>
                 <th className="py-3 px-3.5">Wilayah & Alamat</th>
+                <th className="py-3 px-3.5 text-center">TPS</th>
                 <th className="py-3 px-3.5 text-center">Kelayakan Usia</th>
                 <th className="py-3 px-3.5 text-center">Status Verifikasi</th>
                 <th className="py-3 px-3.5 text-right">Aksi</th>
@@ -465,7 +514,7 @@ export const VotersList: React.FC<VotersListProps> = ({
             <tbody className="divide-y divide-slate-100">
               {paginatedVoters.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-slate-400">
+                  <td colSpan={9} className="py-12 text-center text-slate-400">
                     <Users className="w-10 h-10 mx-auto mb-2 text-slate-300" />
                     <p className="text-sm font-semibold text-slate-600">Tidak ada data pemilih yang sesuai</p>
                     <p className="text-xs text-slate-400 mt-0.5">
@@ -494,7 +543,13 @@ export const VotersList: React.FC<VotersListProps> = ({
                           {voter.namaLengkap}
                         </div>
                         <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-500 mt-0.5">
-                          <span>{voter.nik ? voter.nik : '(NIK belum terisi)'}</span>
+                          <span>
+                            {voter.nik
+                              ? isMasked
+                                ? maskNik(voter.nik)
+                                : voter.nik
+                              : '(NIK belum terisi)'}
+                          </span>
                           {voter.nomorIdentifikasiInternal && (
                             <span className="px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 text-[10px]">
                               {voter.nomorIdentifikasiInternal}
@@ -564,6 +619,19 @@ export const VotersList: React.FC<VotersListProps> = ({
                         <div className="text-[11px] text-slate-500 truncate" title={voter.alamat}>
                           {voter.alamat}
                         </div>
+                      </td>
+
+                      {/* TPS */}
+                      <td className="py-3 px-3.5 text-center">
+                        {voter.tpsNomor ? (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            TPS {voter.tpsNomor}
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+                            Belum Ada
+                          </span>
+                        )}
                       </td>
 
                       {/* Status Kelayakan Usia */}

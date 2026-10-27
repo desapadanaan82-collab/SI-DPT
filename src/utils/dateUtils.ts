@@ -301,3 +301,47 @@ export const MARITAL_STATUS_OPTIONS: { value: MaritalStatusType; label: string; 
   { value: 'S', label: 'Kawin (S)', description: 'Telah terikat pernikahan sah' },
   { value: 'P', label: 'Pernah Kawin (P)', description: 'Cerai hidup atau cerai mati' },
 ];
+
+/**
+ * Mask Indonesian NIK for personal data protection (UU PDP)
+ * Example: 3211011508820001 -> 321101******0001
+ */
+export function maskNik(nik?: string): string {
+  if (!nik || !nik.trim()) return '-';
+  const clean = nik.trim();
+  if (clean.length < 10) return clean;
+  const prefix = clean.substring(0, 6);
+  const suffix = clean.substring(clean.length - 4);
+  const maskedCount = Math.max(2, clean.length - 10);
+  return `${prefix}${'*'.repeat(maskedCount)}${suffix}`;
+}
+
+/**
+ * Mask Indonesian KK for personal data protection
+ * Example: 3211011002080005 -> 321101******0005
+ */
+export function maskKk(kk?: string): string {
+  if (!kk || !kk.trim()) return '-';
+  const clean = kk.trim();
+  if (clean.length < 10) return clean;
+  const prefix = clean.substring(0, 6);
+  const suffix = clean.substring(clean.length - 4);
+  const maskedCount = Math.max(2, clean.length - 10);
+  return `${prefix}${'*'.repeat(maskedCount)}${suffix}`;
+}
+
+/**
+ * Mask voter full name for public view if needed
+ * Example: Budi Santoso -> B**i S*****o
+ */
+export function maskName(name?: string): string {
+  if (!name || !name.trim()) return '-';
+  const parts = name.trim().split(/\s+/);
+  return parts
+    .map((part) => {
+      if (part.length <= 2) return part;
+      return part[0] + '*'.repeat(part.length - 2) + part[part.length - 1];
+    })
+    .join(' ');
+}
+

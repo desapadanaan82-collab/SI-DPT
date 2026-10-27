@@ -5,9 +5,10 @@ import { ArrowRight, Lock, Shield, User, UserCheck, Vote } from 'lucide-react';
 
 interface LoginScreenProps {
   settings: DesaSettings;
+  onCancel?: () => void;
 }
 
-export const LoginScreen: React.FC<LoginScreenProps> = ({ settings }) => {
+export const LoginScreen: React.FC<LoginScreenProps> = ({ settings, onCancel }) => {
   const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -112,6 +113,18 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ settings }) => {
                 <div className="text-[10px] text-blue-700 mt-0.5">Input & Verifikasi Warga</div>
               </button>
             </div>
+
+            {onCancel && (
+              <div className="pt-2 text-center">
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="text-xs font-semibold text-emerald-800 hover:text-emerald-950 transition"
+                >
+                  &larr; Kembali ke Portal Publik Warga
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

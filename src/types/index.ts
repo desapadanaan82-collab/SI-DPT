@@ -56,6 +56,37 @@ export interface RT {
   updatedAt?: string;
 }
 
+export type TpsStatus = 'rancangan' | 'usulan' | 'ditetapkan';
+
+export interface TPS {
+  id: string;
+  nomor: string; // Misal: "01" atau "TPS 01"
+  nama: string; // Misal: "TPS 01 - Balai Dusun Padanaan I"
+  namaTempat: string; // Misal: "Balai Pertemuan Warga / SDN Padanaan"
+  dusunId?: string;
+  dusunNama?: string;
+  rw?: string;
+  rt?: string;
+  alamat: string;
+  latitude: number;
+  longitude: number;
+  kapasitas: number;
+  aksesibilitas: string;
+  status: TpsStatus;
+  kontakPetugas?: string;
+  namaKetuaKpks?: string;
+  keterangan?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface TpsRelationCheck {
+  canDelete: boolean;
+  voterCount: number;
+  reason: string;
+  sampleVoters?: Voter[];
+}
+
 export type VerificationStatus = 'belum_diverifikasi' | 'sudah_diverifikasi' | 'perlu_perbaikan';
 
 export type GenderType = 'L' | 'P';
@@ -82,6 +113,8 @@ export interface Voter {
   dusunNama?: string;
   rt: string;
   rw: string;
+  tpsId?: string; // ID TPS terdaftar
+  tpsNomor?: string; // Nomor TPS terdaftar (e.g. "01")
   statusVerifikasi: VerificationStatus;
   kelayakanStatus?: VoterEligibilityStatus;
   alasanKelayakan?: string;
@@ -105,7 +138,11 @@ export type AuditAction =
   | 'impor_excel'
   | 'kelola_wilayah'
   | 'pengaturan_desa'
-  | 'backup_restore';
+  | 'backup_restore'
+  | 'tambah_tps'
+  | 'edit_tps'
+  | 'hapus_tps'
+  | 'alokasi_tps';
 
 export interface AuditLog {
   id: string;
